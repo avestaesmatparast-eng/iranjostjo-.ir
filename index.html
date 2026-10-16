@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>جستجوی هوشمند فارسی</title>
+  <style>
+    :root {
+      --paper:#f6f1e4; --surface:#fffdf7; --ink:#1b2238; --ink-2:#56607a; --line:#ddd2b8;
+      --hero:#13285c; --on-hero:#f6f1e4; --on-hero-2:#a9cdd8;
+      --lapis:#1e3f8a; --on-lapis:#ffffff; --turq:#12908c; --gold:#c79a3b; --gold-2:#e6c26e;
+      --shadow:0 14px 34px -18px rgba(19,40,92,.45);
+      --display:"Sakkal Majalla","Traditional Arabic","Noto Naskh Arabic","Amiri",Tahoma,serif;
+      --star-gold:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon fill='%23c79a3b' points='50.0,0.0 64.6,14.6 85.4,14.6 85.4,35.4 100.0,50.0 85.4,64.6 85.4,85.4 64.6,85.4 50.0,100.0 35.4,85.4 14.6,85.4 14.6,64.6 0.0,50.0 14.6,35.4 14.6,14.6 35.4,14.6'/%3E%3C/svg%3E");
+      /* کاشی: ستاره‌ی هشت‌پر طلایی + حلقه‌ی فیروزه‌ای */
+      --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='none' stroke='%23e6c26e' stroke-opacity='.20'%3E%3Crect x='17' y='17' width='50' height='50'/%3E%3Crect x='17' y='17' width='50' height='50' transform='rotate(45 42 42)'/%3E%3C/g%3E%3Cg fill='none' stroke='%2338b6b0' stroke-opacity='.30'%3E%3Ccircle cx='42' cy='42' r='9'/%3E%3Cpath d='M0 0l6 6M84 0l-6 6M0 84l6-6M84 84l-6-6'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper:#0a1430; --surface:#10204a; --ink:#f1ead7; --ink-2:#a9b5cf; --line:#27386a;
+        --hero:#0f2252; --on-hero:#f1ead7; --on-hero-2:#9fc6d2;
+        --lapis:#8fb0f5; --on-lapis:#0a1430; --turq:#3cc4bc; --gold:#d8ae52; --gold-2:#ecc977; --shadow:none;
+      }
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; overflow-x:clip; background:var(--paper); color:var(--ink); font-size:17px; line-height:2;
+           font-family:"Vazirmatn","Vazir","IRANSansX","Segoe UI","Tahoma",system-ui,sans-serif;
+           -webkit-font-smoothing:antialiased; }
+    :focus-visible { outline:2px solid var(--gold-2); outline-offset:2px; }
+    .wrap { max-width:880px; margin:0 auto; padding:0 20px 88px; }
+
+    /* ---------- سردر: لاجورد + کاشی + لبه‌ی طاقی ---------- */
+    .hero { position:relative; isolation:isolate; background:var(--hero); color:var(--on-hero);
+            padding:20px 20px clamp(44px,9vh,84px); margin-bottom:34px; }
+    .hero::before { content:""; position:absolute; inset:0; z-index:-1; background:var(--tile); }
+    .hero::after { content:""; position:absolute; left:0; right:0; top:100%; height:18px;
+                   background:radial-gradient(circle at 18px 0, var(--hero) 18px, transparent 18.6px) 0 0 / 36px 18px repeat-x; }
+    .inner { max-width:840px; margin:0 auto; }
+    .brand { display:flex; align-items:center; gap:10px; color:var(--gold-2); font-weight:700; font-size:.95rem; }
+    .brand i { width:22px; height:22px; background:var(--gold-2);
+               clip-path:polygon(50.0% 0.0%, 64.6% 14.6%, 85.4% 14.6%, 85.4% 35.4%, 100.0% 50.0%, 85.4% 64.6%, 85.4% 85.4%, 64.6% 85.4%, 50.0% 100.0%, 35.4% 85.4%, 14.6% 85.4%, 14.6% 64.6%, 0.0% 50.0%, 14.6% 35.4%, 14.6% 14.6%, 35.4% 14.6%); }
+    h1 { margin:clamp(30px,8vh,64px) 0 0; max-width:14em; text-wrap:balance; font-family:var(--display);
+         font-size:clamp(2.3rem,6.4vw,3.9rem); line-height:1.5; font-weight:700; }
+    .lede { margin:6px 0 30px; max-width:34em; text-wrap:balance; color:var(--on-hero-2); }
+
+    .field { display:flex; align-items:center; gap:6px; padding:7px; background:var(--surface);
+             border:2px solid var(--gold); border-radius:999px;
+             box-shadow:0 0 0 4px var(--hero), 0 0 0 5px var(--gold-2); transition:border-color .2s; }
+    .field:focus-within { border-color:var(--turq); box-shadow:0 0 0 4px var(--hero), 0 0 0 5px var(--turq); }
+    .field input { flex:1; min-width:0; border:0; background:transparent; color:var(--ink); font:inherit;
+                   font-size:1.1rem; padding:10px 18px; outline:none; }
+    .field input::placeholder { color:var(--ink-2); opacity:.85; }
+    .iconbtn { position:relative; display:grid; place-items:center; width:48px; height:48px; border:0;
+               border-radius:50%; background:transparent; color:var(--ink-2); cursor:pointer; flex:none; }
+    .iconbtn:hover { background:color-mix(in srgb, var(--gold) 18%, transparent); color:var(--ink); }
+    .iconbtn[hidden] { display:none; }
+    .iconbtn.on { background:var(--gold); color:#1b2238; }
+    .iconbtn.on::after { content:""; position:absolute; inset:-4px; border-radius:50%;
+                         border:2px solid var(--gold); animation:ring 1.4s ease-out infinite; }
+    @keyframes ring { from { transform:scale(.92); opacity:.95; } to { transform:scale(1.55); opacity:0; } }
+    .go { display:inline-flex; align-items:center; gap:8px; height:48px; padding:0 26px; border:0;
+          border-radius:999px; background:var(--lapis); color:var(--on-lapis); font:inherit;
+          font-weight:700; cursor:pointer; flex:none; }
+    .go:disabled { opacity:.6; cursor:progress; }
+    #voice-msg { min-height:1.6em; margin-top:14px; padding-inline:18px; color:var(--on-hero-2); font-size:.88rem; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+    .chip { padding:2px 16px; border:1px solid color-mix(in srgb, var(--on-hero) 38%, transparent); border-radius:999px;
+            background:transparent; color:var(--on-hero-2); font:inherit; font-size:.92rem; cursor:pointer;
+            transition:border-color .15s, color .15s; }
+    .chip:hover { border-color:var(--gold-2); color:var(--on-hero); }
+
+    body.compact .hero { padding-bottom:30px; margin-bottom:34px; }
+    body.compact h1, body.compact .lede, body.compact .chips { display:none; }
+    body.compact .brand { margin-bottom:14px; }
+    body.compact #voice-msg { margin-top:10px; min-height:1.2em; }
+
+    /* ---------- نتیجه‌ها ---------- */
+    .answer { position:relative; padding:24px 30px 22px; background:var(--surface); border:1px solid var(--gold);
+              border-radius:4px; box-shadow:inset 0 0 0 5px var(--surface), inset 0 0 0 6px color-mix(in srgb, var(--gold) 55%, transparent), var(--shadow); }
+    .answer h2 { display:flex; align-items:center; gap:10px; margin:0 0 6px; font-size:.95rem; font-weight:700; color:var(--ink-2); }
+    .answer h2::before { content:""; width:13px; height:13px; background:var(--star-gold) center/contain no-repeat; }
+    .answer p { margin:0; max-width:40em; font-family:var(--display); font-size:1.5rem; line-height:2; font-weight:700; }
+    .tools { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:14px; }
+    .pill { display:inline-flex; align-items:center; gap:8px; padding:2px 16px; border:1px solid var(--gold);
+            border-radius:999px; background:transparent; color:var(--ink); font:inherit; font-size:.9rem; cursor:pointer; }
+    .pill:hover { background:color-mix(in srgb, var(--gold) 14%, transparent); }
+    .pill[aria-pressed=true] { background:var(--lapis); border-color:var(--lapis); color:var(--on-lapis); }
+    .auto { display:inline-flex; align-items:center; gap:8px; color:var(--ink-2); font-size:.9rem; cursor:pointer; }
+    .auto input { accent-color:var(--turq); width:16px; height:16px; }
+
+    .sec-title { display:flex; align-items:center; gap:12px; margin:50px 0 16px; font-size:1.1rem; font-weight:700; }
+    .sec-title::before { content:""; width:14px; height:14px; background:var(--star-gold) center/contain no-repeat; }
+    .sec-title::after { content:""; flex:1; height:1px; background:linear-gradient(to left, var(--gold), transparent); }
+    .strip { display:grid; grid-auto-flow:column; grid-auto-columns:min(268px,74vw); gap:18px; overflow-x:auto;
+             padding-bottom:12px; scroll-snap-type:x proximity; }
+    .vid { display:block; align-self:start; padding:0; border:0; background:none; color:inherit; font:inherit;
+           text-align:start; cursor:pointer; scroll-snap-align:start; }
+    .thumb { position:relative; display:block; aspect-ratio:16/9; border-radius:10px; overflow:hidden;
+             background:color-mix(in srgb, var(--lapis) 16%, var(--surface)); border:1px solid var(--line);
+             transition:border-color .2s; }
+    .vid:hover .thumb { border-color:var(--gold); }
+    .thumb img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .35s; }
+    .vid:hover .thumb img { transform:scale(1.04); }
+    .play { position:absolute; inset:0; display:grid; place-items:center; }
+    .play svg { width:52px; height:52px; padding:15px 13px 15px 17px; border-radius:50%;
+                background:rgba(19,40,92,.82); color:#fff; box-shadow:0 0 0 2px var(--gold-2); }
+    .dur { position:absolute; bottom:8px; left:8px; padding:0 8px; border-radius:6px; background:rgba(0,0,0,.74);
+           color:#fff; font-size:.75rem; line-height:1.8; direction:ltr; }
+    .vtitle { display:-webkit-box; margin:10px 2px 0; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+              overflow:hidden; font-size:.95rem; line-height:1.8; font-weight:600; }
+    .vmeta { display:block; margin:0 2px; color:var(--ink-2); font-size:.8rem; }
+
+    .sources { margin:0; padding:0; list-style:none; }
+    .source { display:grid; grid-template-columns:48px 1fr; gap:2px 16px; padding:20px 0; border-top:1px solid var(--line); }
+    .fav { grid-row:1 / span 3; display:grid; place-items:center; width:48px; height:48px; color:#fff; font-weight:800;
+           direction:ltr; font-size:.95rem; clip-path:polygon(50.0% 0.0%, 64.6% 14.6%, 85.4% 14.6%, 85.4% 35.4%, 100.0% 50.0%, 85.4% 64.6%, 85.4% 85.4%, 64.6% 85.4%, 50.0% 100.0%, 35.4% 85.4%, 14.6% 85.4%, 14.6% 64.6%, 0.0% 50.0%, 14.6% 35.4%, 14.6% 14.6%, 35.4% 14.6%); }
+    .c0 { background:#1e3f8a; } .c1 { background:#12908c; } .c2 { background:#b9852a; } .c3 { background:#8c2f39; }
+    .source h3 { margin:0; font-size:1.02rem; line-height:1.8; }
+    .source h3 a { color:var(--ink); text-decoration:none; }
+    .source h3 a:hover { color:var(--lapis); text-decoration:underline; }
+    .host { color:var(--ink-2); font-size:.8rem; direction:ltr; text-align:right; word-break:break-all; line-height:1.6; }
+    .source p { margin:4px 0 0; color:var(--ink-2); font-size:.95rem; line-height:2; }
+    .note { margin:20px 0 0; color:var(--ink-2); font-size:.88rem; }
+
+    .skel { height:14px; margin:14px 0; border-radius:7px; background-size:200% 100%;
+            background-image:linear-gradient(90deg,var(--line),color-mix(in srgb,var(--line) 35%,transparent),var(--line));
+            animation:shimmer 1.3s linear infinite; }
+    @keyframes shimmer { to { background-position:-200% 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .skel, .iconbtn.on::after { animation:none; }
+      .thumb img, .field, .thumb { transition:none; }
+    }
+
+    /* ---------- پخش ویدیو ---------- */
+    dialog { width:min(900px,94vw); padding:0; border:1px solid var(--gold); border-radius:8px; background:var(--surface);
+             color:var(--ink); box-shadow:0 30px 80px rgba(0,0,0,.5); }
+    dialog::backdrop { background:rgba(8,16,38,.78); }
+    .pbar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 10px 10px 18px; }
+    .pbar strong { font-size:.95rem; line-height:1.7; }
+    .pframe { aspect-ratio:16/9; background:#000; }
+    .pframe iframe { display:block; width:100%; height:100%; border:0; }
+    .pfoot { padding:10px 18px 14px; font-size:.88rem; color:var(--ink-2); }
+    .pfoot a { color:var(--lapis); }
+
+    @media (max-width:560px) {
+      .go span { display:none; } .go { padding:0 16px; }
+      .field input { padding-inline:12px; }
+      .answer { padding:20px 20px 18px; }
+    }
+  </style>
+</head>
+<body class="{% if result %}compact{% endif %}">
+<header class="hero"><div class="inner">
+    <div class="brand"><i aria-hidden="true"></i><span>جستجوی هوشمند فارسی</span></div>
+    <h1>بپرسید؛ جواب را فارسی، با منبع و ویدیو بگیرید</h1>
+    <p class="lede">در وب جستجو می‌کند، خلاصه‌ی فارسی می‌نویسد و اگر بخواهید جواب را با صدا می‌خواند.</p>
+
+    <form method="get" action="/" id="f" role="search">
+      <div class="field" id="field">
+        <input type="text" name="q" value="{{ query }}" placeholder="سؤال خود را بنویسید یا با میکروفون بگویید…" maxlength="300" required autofocus aria-label="سؤال">
+        <button type="button" id="mic" class="iconbtn" title="گفتن سؤال با صدا" aria-label="گفتن سؤال با صدا" hidden>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        </button>
+        <button type="submit" id="btn" class="go">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span>جستجو</span>
+        </button>
+      </div>
+    </form>
+    <div id="voice-msg" aria-live="polite"></div>
+
+    <div class="chips" id="chips">
+      <button type="button" class="chip">روش‌های بالا بردن حافظه</button>
+      <button type="button" class="chip">تاریخچه‌ی تخت جمشید</button>
+      <button type="button" class="chip">طرز تهیه‌ی کیک فنجانی</button>
+    </div>
+  </div></header>
+
+<div class="wrap">
+  <main id="results">
+  {% if result %}
+    {% if result.overall %}
+    <section class="answer">
+      <h2>پاسخ کوتاه</h2>
+      <p id="overall">{{ result.overall }}</p>
+      <div class="tools">
+        <button type="button" id="speak" class="pill" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <span id="speak-label">خواندن با صدا</span>
+        </button>
+        <label class="auto"><input type="checkbox" id="auto"> خواندن خودکار</label>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if result.videos %}
+    <section>
+      <h2 class="sec-title">ویدیوهای مرتبط</h2>
+      <div class="strip">
+        {% for v in result.videos %}
+        <button type="button" class="vid" data-embed="{{ v.embed }}" data-url="{{ v.url }}" data-title="{{ v.title }}">
+          <span class="thumb">
+            {% if v.thumb %}<img src="{{ v.thumb }}" alt="" loading="lazy" referrerpolicy="no-referrer">{% endif %}
+            <span class="play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+            {% if v.duration %}<span class="dur">{{ v.duration }}</span>{% endif %}
+          </span>
+          <span class="vtitle">{{ v.title }}</span>
+          {% if v.publisher %}<span class="vmeta">{{ v.publisher }}</span>{% endif %}
+        </button>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if result.sources %}
+    <section>
+      <h2 class="sec-title">منابع</h2>
+      <ul class="sources">
+        {% for s in result.sources %}
+        {% set host = (s.url.split('/')[2] if s.url.split('/')|length > 2 else s.url).replace('www.', '') %}
+        <li class="source">
+          <span class="fav c{{ loop.index0 % 4 }}" aria-hidden="true">{{ host[:1]|upper }}</span>
+          <h3><a href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.title }}</a></h3>
+          <div class="host">{{ host }}</div>
+          <p>{{ s.summary }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    {% for n in result.notes %}<p class="note">{{ n }}</p>{% endfor %}
+  {% endif %}
+  </main>
+</div>
+
+<dialog id="player" aria-label="پخش ویدیو">
+  <div class="pbar">
+    <strong id="ptitle"></strong>
+    <button type="button" id="pclose" class="iconbtn" aria-label="بستن">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="pframe" id="pframe"></div>
+  <div class="pfoot">اگر ویدیو پخش نشد (مثلاً بدون فیلترشکن)، <a id="plink" href="#" target="_blank" rel="noopener noreferrer">در سایت اصلی باز کنید</a>.</div>
+</dialog>
+
+<script>
+  function $(id) { return document.getElementById(id); }
+  var form = $('f'), input = form.querySelector('input[name=q]');
+  var btn = $('btn'), voiceMsg = $('voice-msg'), mic = $('mic'), results = $('results');
+  var canSpeak = 'speechSynthesis' in window;
+  var speaking = false;
+
+  var SKELETON = '<section class="answer" aria-busy="true"><div class="skel" style="width:94%"></div><div class="skel" style="width:86%"></div><div class="skel" style="width:58%"></div></section>';
+
+  // ---------- جستجو بدون بارگذاری مجدد صفحه ----------
+  // (با بارگذاری مجدد، مرورگر پخش خودکار صدا را مسدود می‌کند؛ اینجا نمی‌کند)
+  function doSearch(q, spoken) {
+    q = (q || '').trim();
+    if (!q) return;
+    stopSpeech();
+    btn.disabled = true;
+    voiceMsg.textContent = '';
+    document.body.classList.add('compact');
+    results.innerHTML = SKELETON;
+    fetch('/?q=' + encodeURIComponent(q))
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var fresh = doc.getElementById('results');
+        results.innerHTML = fresh ? fresh.innerHTML : '';
+        try { history.replaceState(null, '', '/?q=' + encodeURIComponent(q)); } catch (e) {}
+        wireResults();
+        var box = $('auto');
+        if ($('overall') && (spoken || (box && box.checked))) speakNow(true);
+      })
+      .catch(function () {
+        results.innerHTML = '';
+        voiceMsg.textContent = 'ارتباط با سرور برقرار نشد؛ مطمئن شوید برنامه (python app.py) هنوز اجرا است.';
+      })
+      .then(function () { btn.disabled = false; });
+  }
+
+  form.addEventListener('submit', function (e) { e.preventDefault(); doSearch(input.value, false); });
+  $('chips').addEventListener('click', function (e) {
+    var c = e.target.closest ? e.target.closest('.chip') : null;
+    if (c) { input.value = c.textContent.trim(); doSearch(input.value, false); }
+  });
+
+  // ---------- خروجی صوتی ----------
+  function setSpeakLabel() {
+    var l = $('speak-label'), b = $('speak');
+    if (l) l.textContent = speaking ? 'توقف' : 'خواندن با صدا';
+    if (b) b.setAttribute('aria-pressed', speaking ? 'true' : 'false');
+  }
+  // اول صدای فارسی سرور (/tts)؛ اگر نشد، صدای خود مرورگر
+  var player = null, speakToken = 0;
+  function stopSpeech() {
+    speakToken++;
+    if (player) { try { player.pause(); } catch (e) {} player = null; }
+    if (canSpeak) speechSynthesis.cancel();
+    speaking = false; setSpeakLabel();
+  }
+  function speakNow(auto) {
+    var el = $('overall');
+    if (!el) return;
+    stopSpeech();
+    var my = speakToken, text = el.textContent;
+    speaking = true; setSpeakLabel();
+    voiceMsg.textContent = '';
+    fetch('/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text }) })
+      .then(function (r) { if (!r.ok) throw new Error('tts'); return r.blob(); })
+      .then(function (b) {
+        if (my !== speakToken) return;               // کاربر در این فاصله توقف زد
+        var a = new Audio(URL.createObjectURL(b));
+        player = a;
+        a.onended = function () { if (my === speakToken) { speaking = false; setSpeakLabel(); } };
+        return a.play();
+      })
+      .catch(function (err) {
+        if (my !== speakToken) return;
+        if (err && err.name === 'NotAllowedError') {
+          speaking = false; setSpeakLabel();
+          voiceMsg.textContent = 'مرورگر پخش خودکار را مسدود کرد؛ دکمه‌ی «خواندن با صدا» را بزنید.';
+          return;
+        }
+        speakWithBrowser(text, auto);                // سرور صدا نساخت (مثلاً اینترنت/فیلترشکن)
+      });
+  }
+  function speakWithBrowser(text, auto) {
+    if (!canSpeak) {
+      speaking = false; setSpeakLabel();
+      voiceMsg.textContent = 'ساخت صدا ممکن نشد (اینترنت یا فیلترشکن را بررسی کنید).';
+      return;
+    }
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fa-IR';
+    var all = speechSynthesis.getVoices();
+    var fa = all.filter(function (v) { return v.lang.toLowerCase().replace('_', '-').indexOf('fa') === 0; });
+    if (fa.length) u.voice = fa[0];
+    // در Chrome فهرست صداها اولِ کار خالی است؛ فقط وقتی فهرست آماده است پیام بده
+    else if (all.length) voiceMsg.textContent = 'صدای فارسی روی این دستگاه نصب نیست. مرورگر Edge معمولاً صدای فارسی دارد.';
+    u.onstart = function () { speaking = true; setSpeakLabel(); };
+    u.onend = function () { speaking = false; setSpeakLabel(); };
+    u.onerror = function (e) {
+      speaking = false; setSpeakLabel();
+      if (auto && e.error === 'not-allowed') voiceMsg.textContent = 'مرورگر پخش خودکار را مسدود کرد؛ دکمه‌ی «خواندن با صدا» را بزنید.';
+    };
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+  function wireResults() {
+    var sb = $('speak'), box = $('auto');
+    if (!sb) return;
+    try { box.checked = localStorage.getItem('autoSpeak') === '1'; } catch (e) {}
+    box.addEventListener('change', function () {
+      try { localStorage.setItem('autoSpeak', box.checked ? '1' : '0'); } catch (e) {}
+    });
+    sb.addEventListener('click', function () {
+      if (speaking) { stopSpeech(); return; }
+      speakNow(false);
+    });
+  }
+  wireResults();
+  window.addEventListener('beforeunload', stopSpeech);
+  // اگر صفحه با نتیجه باز شد و خواندن خودکار روشن است
+  if ($('overall') && $('auto') && $('auto').checked) setTimeout(function () { speakNow(true); }, 400);
+
+  // ---------- پخش ویدیو ----------
+  var dlg = $('player');
+  results.addEventListener('click', function (e) {
+    var v = e.target.closest ? e.target.closest('.vid') : null;
+    if (!v) return;
+    var embed = v.dataset.embed, url = v.dataset.url;
+    if (!embed || typeof dlg.showModal !== 'function') { window.open(url, '_blank', 'noopener'); return; }
+    stopSpeech();
+    $('ptitle').textContent = v.dataset.title || '';
+    $('plink').href = url;
+    var f = document.createElement('iframe');      // با DOM ساخته می‌شود تا آدرس هرگز به‌عنوان HTML تفسیر نشود
+    f.src = embed + (embed.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.title = v.dataset.title || 'ویدیو';
+    $('pframe').replaceChildren(f);
+    dlg.showModal();
+  });
+  dlg.addEventListener('close', function () { $('pframe').replaceChildren(); });   // پخش متوقف می‌شود
+  $('pclose').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+
+  // ---------- ورودی صوتی: گفتن سؤال به فارسی (Chrome یا Edge + اینترنت) ----------
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SR) {
+    mic.hidden = false;
+    var rec = new SR();
+    rec.lang = 'fa-IR';
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    var listening = false;
+    function stopUi() { listening = false; mic.classList.remove('on'); }
+
+    mic.addEventListener('click', function () {
+      if (listening) { rec.stop(); return; }
+      if (!window.isSecureContext) {
+        voiceMsg.textContent = 'میکروفون فقط روی آدرس https یا localhost کار می‌کند (نه روی http://192.168...).';
+        return;
+      }
+      stopSpeech();
+      voiceMsg.textContent = 'در حال گوش دادن… سؤال را بگویید';
+      try { rec.start(); listening = true; mic.classList.add('on'); }
+      catch (e) { voiceMsg.textContent = 'میکروفون در دسترس نیست.'; }
+    });
+    rec.onresult = function (e) {
+      var text = '';
+      for (var i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      input.value = text;
+      if (e.results[e.results.length - 1].isFinal) {
+        voiceMsg.textContent = '';
+        stopUi();
+        doSearch(text, true);   // سؤال صوتی ← جواب هم با صدا
+      }
+    };
+    rec.onerror = function (e) {
+      stopUi();
+      voiceMsg.textContent =
+        e.error === 'not-allowed' ? 'اجازه‌ی میکروفون داده نشده است.' :
+        e.error === 'no-speech' ? 'صدایی شنیده نشد؛ دوباره امتحان کنید.' :
+        e.error === 'network' ? 'تشخیص صدا به اینترنت (و شاید فیلترشکن) نیاز دارد.' :
+        'خطا در تشخیص صدا.';
+    };
+    rec.onend = function () { stopUi(); };
+  }
+</script>
+</body>
+</html>
